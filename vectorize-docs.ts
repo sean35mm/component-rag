@@ -460,6 +460,8 @@ class DocumentVectorizer {
 
         for (let j = 0; j < batch.length; j++) {
           const chunk = batch[j];
+          if (!chunk) continue;
+
           const tokenCount = this.estimateTokenCount(chunk.content);
 
           try {
