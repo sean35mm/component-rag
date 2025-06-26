@@ -42,8 +42,7 @@ class RAGService {
     });
 
     this.anthropic = new Anthropic({
-      apiKey:
-        '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',
+      apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
     this.pinecone = new Pinecone({
