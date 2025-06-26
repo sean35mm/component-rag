@@ -55,19 +55,37 @@ class RAGService {
     maxResults: number = 8
   ): Promise<any[]> {
     try {
+      console.log(`🔍 Searching for: "${query}" (max: ${maxResults})`);
+
       const index = this.pinecone.index(this.indexName);
 
+      console.log('🤖 Creating OpenAI embedding...');
       const embedding = await this.openai.embeddings.create({
         model: 'text-embedding-3-small',
         input: query,
       });
 
+      if (!embedding.data[0]?.embedding) {
+        throw new Error(
+          'Failed to create embedding - no embedding data received'
+        );
+      }
+
+      console.log(
+        `📊 Embedding created (${embedding.data[0].embedding.length} dimensions)`
+      );
+      console.log('🔍 Querying Pinecone index...');
+
       const results = await index.query({
-        vector: embedding.data[0]!.embedding,
+        vector: embedding.data[0].embedding,
         topK: maxResults,
         includeMetadata: true,
         includeValues: false,
       });
+
+      console.log(
+        `✅ Pinecone query successful (${results.matches?.length || 0} matches)`
+      );
 
       const relevantDocs =
         results.matches?.map((match) => ({
@@ -85,9 +103,15 @@ class RAGService {
           score: match.score || 0,
         })) || [];
 
+      console.log(`📋 Processed ${relevantDocs.length} relevant documents`);
       return relevantDocs.sort((a, b) => b.score - a.score);
     } catch (error) {
-      console.error('Error searching documents:', error);
+      console.error('❌ Error searching documents:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      // Return empty array instead of throwing to prevent total failure
       return [];
     }
   }
