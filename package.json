@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run rag-server.ts",
+    "start": "bun run index.ts",
+    "vectorize": "bun run vectorize-docs.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.54.0",
+    "@pinecone-database/pinecone": "^6.1.1",
+    "dotenv": "^16.5.0",
+    "openai": "^5.7.0"
+  }
+}
